@@ -60,17 +60,37 @@ namespace TextAnalyse
         /// <returns>Die Liedtexte als Strings.</returns>
         private void LadeLiedtexteAusDateien()
         {
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/liedtexte";
+            string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+            // lade ersetzungsliste zuerst
+            string filepath = pfad + "/ersetzungen.txt";
+            var zeilen=File.ReadAllLines(filepath);
+            Dictionary<string, string> ersetzungen = new Dictionary<string, string>();
+            for (int i = 0; i < zeilen.Length-1; i=i+2)
+            {
+                ersetzungen.Add(zeilen[i],zeilen[i+1]);
+            }
+
+            string folderPath = pfad + "/liedtexte";
+         
             foreach (string file in Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.AllDirectories))
             {
                 string contents = File.ReadAllText(file);
-                liederliste.Add(new Lied(contents));
+                liederliste.Add(new Lied(contents,ersetzungen));
             }
         }
 
         public void Dump()
         {
             Console.WriteLine("\nunterschiedliche Worte (Vokabular):" + this.liederwortstatistik.Count());
+
+            var x12 = from element in liederwortstatistik
+                orderby element.WieOftInDenTextenGefunden descending 
+                      select element;
+            foreach (var x in x12)
+            {
+                x.Dump();
+            }
         }
     }
 }

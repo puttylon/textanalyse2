@@ -34,19 +34,19 @@ namespace TextAnalyse
             foreach (var a in this.Worte)
             {
                 Console.WriteLine(a.Wort + ' ' + a.Anzahl);
-                if (counter++ == 10)
+                if (counter++ == 5)
                     break;
             }
             Console.WriteLine();
         }
 
 
-        public Lied(string liedtext)
+        public Lied(string liedtext, Dictionary<string, string> ersetzungen)
         {
-            AnalysiereText(liedtext);
+            AnalysiereText(liedtext, ersetzungen);
         }
 
-        private void AnalysiereText(string songtext)
+        private void AnalysiereText(string songtext, Dictionary<string, string> ersetzungen)
         {
 
             // wir holen die Metadaten aus den ersten zeilen des Songtextes
@@ -71,12 +71,26 @@ namespace TextAnalyse
             var words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
             // damit wir mit LINQ damit arbeiten können, wandeln wirs das array in IEnumerable um
-            IEnumerable<string> xxx_words = words.Cast<string>();
+            // IEnumerable<string> xxx_words = words.Cast<string>();
+            List<string> xxx_words = new List<string>(words);
 
 
             // Worte werden durch substitute ersetzt um zu vereinheitlichen.
             // so wird z.B. aus "geh'" "gehe" und aus "7." "siebten" 
             // vielleicht??? 
+      
+            foreach (var item in ersetzungen)
+            {
+                xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
+            }
+
+            // wieder zusammensetzen, da aus einem wort mehrere wieder sein können
+            text = String.Join(" ", xxx_words);
+            // und dann nochmals alles durchwühlen. sicher ist sicher
+            foreach (var item in ersetzungen)
+            {
+                xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
+            }
 
 
             // hier zählen wir, welches wort wie oft vorkommt

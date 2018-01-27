@@ -22,5 +22,10 @@ namespace TextAnalyse
             get;
             set;
         }
+
+        public void Dump()
+        {
+            Console.WriteLine(Wort + ' ' + InWievielenLiedergefunden + ' ' + WieOftInDenTextenGefunden);
+        }
     }
 }
