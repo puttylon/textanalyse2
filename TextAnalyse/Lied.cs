@@ -6,9 +6,6 @@ namespace TextAnalyse
 {
     public class Lied
     {
-        public Lied()
-        {
-        }
 
         public string Kuenstler { get; set; }
         public string Liedtitel { get; set; }
@@ -43,8 +40,6 @@ namespace TextAnalyse
             Console.WriteLine();
         }
 
-
-      
 
         public Lied(string liedtext)
         {

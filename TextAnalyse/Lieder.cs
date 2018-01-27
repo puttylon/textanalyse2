@@ -12,7 +12,9 @@ namespace TextAnalyse
             LadeLieder();
         }
 
+
         private List<Lied> liederliste = new List<Lied>();
+        private List<LiederWortStatistik> liederwortstatistik = new List<LiederWortStatistik>();
 
         public List<Lied> LiederListe()
         {
@@ -23,6 +25,33 @@ namespace TextAnalyse
         {
             liederliste = new List<Lied>();
             LadeLiedtexteAusDateien();
+            ZaehleWorte();
+        }
+
+        private void ZaehleWorte()
+        {
+            // welche worte werden überhaupt in wievielen lieder benutzt?
+            // hier zählen wir, welches wort wie oft vorkommt
+            var results =
+                from song in this.LiederListe()
+                from wordcount in song.Worte
+                group wordcount by wordcount.Wort
+                ;
+
+          
+            liederwortstatistik.Clear();
+            foreach (var a in results)
+            {
+                Console.WriteLine(a.Key + ' ' + a.ToList().Count + ' ' + a.ToList().Sum((WortAnzahl arg) => arg.Anzahl));
+                liederwortstatistik.Add( new LiederWortStatistik() 
+                    {
+                        Wort=a.Key , 
+                        InWievielenLiedergefunden=a.ToList().Count(), 
+                        WieOftInDenTextenGefunden= a.ToList().Sum((WortAnzahl arg) => arg.Anzahl)
+                    });
+            }
+
+
         }
 
         /// <summary>
@@ -37,6 +66,11 @@ namespace TextAnalyse
                 string contents = File.ReadAllText(file);
                 liederliste.Add(new Lied(contents));
             }
+        }
+
+        public void Dump()
+        {
+            Console.WriteLine("\nunterschiedliche Worte (Vokabular):" + this.liederwortstatistik.Count());
         }
     }
 }
