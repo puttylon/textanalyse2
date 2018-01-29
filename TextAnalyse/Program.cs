@@ -15,13 +15,13 @@ namespace TextAnalyse
         {
             Lieder lieder = new Lieder();
 
-            // hier wird die Liste ausgegeben
-            foreach (var lied in lieder.LiederListe().OrderBy(o => o.Liedtitel).ToList())
-            {
-                lied.Dump();
-            }
+            //// hier wird die Liste ausgegeben
+            //foreach (var lied in lieder.LiederListe().OrderBy(o => o.Liedtitel).ToList())
+            //{
+            //    lied.Dump();
+            //}
 
-           lieder.Dump();
+           //lieder.Dump();
 
 
 

@@ -26,6 +26,11 @@ namespace TextAnalyse
             liederliste = new List<Lied>();
             LadeLiedtexteAusDateien();
             ZaehleWorte();
+            foreach (var item in liederliste)
+            {
+                item.ErmittlePunkte(liederwortstatistik);
+                item.Dump();
+            }
         }
 
         private void ZaehleWorte()
@@ -50,7 +55,7 @@ namespace TextAnalyse
                         WieOftInDenTextenGefunden= a.ToList().Sum((WortAnzahl arg) => arg.Anzahl)
                     });
             }
-
+            Console.WriteLine();
 
         }
 
