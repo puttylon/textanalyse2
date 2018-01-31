@@ -104,8 +104,6 @@ namespace TextAnalyse
             string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string filepath = pfad + "/Dropbox/Sara/Masterarbeit/vokabular.csv";
 
-
-
             if (ausgabeindatei)
             {
                 fs = new FileStream(filepath, FileMode.Create);

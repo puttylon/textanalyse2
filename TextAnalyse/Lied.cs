@@ -23,7 +23,12 @@ namespace TextAnalyse
             get;
             private set;
         }
-        public IEnumerable<WortAnzahl> Worte { get; set; }
+
+        public List<WortAnzahl> Worte 
+        { 
+            get; 
+            private set; 
+        }
 
 
         private decimal m_PunkteInWievielenLiedergefunden = 0;
@@ -76,7 +81,7 @@ namespace TextAnalyse
 
         public string ZeigeLiedstatistik()
         {
-            return this.Kuenstler + 
+            string result= this.Kuenstler + 
                               delimiter +
                               this.Liedtitel +
                               delimiter +
@@ -85,6 +90,12 @@ namespace TextAnalyse
                               this.PunkteInWievielenLiedergefunden()  +
                               delimiter +
                               this.PunkteWieOftInDenTextenGefunden()  ;
+
+            foreach (var item in Worte.OrderBy(x=>x.Wort))
+            {
+                result = result + delimiter + item.Wort;
+            }
+            return result;
         }
 
         public Lied(string liedtext, Dictionary<string, string> ersetzungen)
@@ -119,21 +130,19 @@ namespace TextAnalyse
             // und trennen danach den text in einzelne worte auf
             var words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
-            // damit wir mit LINQ damit arbeiten können, wandeln wirs das array in IEnumerable um
-            // IEnumerable<string> xxx_words = words.Cast<string>();
+            // damit wir mit LINQ damit arbeiten können, wandeln wirs das array in List<string> um
             List<string> xxx_words = new List<string>(words);
 
 
             // Worte werden durch substitute ersetzt um zu vereinheitlichen.
             // so wird z.B. aus "geh'" "gehe" und aus "7." "siebten" 
             // vielleicht??? 
-      
             foreach (var item in ersetzungen)
             {
                 xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
             }
 
-            // wieder zusammensetzen, da aus einem wort mehrere wieder sein können
+            // wieder zusammensetzen, da aus einem wort mehrere werden können
             text = String.Join(" ", xxx_words);
             // wieder splitten
             words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
@@ -146,14 +155,13 @@ namespace TextAnalyse
                 xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
             }
 
-
             // hier zählen wir, welches wort wie oft vorkommt
             var counts = xxx_words
                 .GroupBy(x => x)
                 .Select(x => new WortAnzahl() { Wort = x.Key, Anzahl = x.Count() })
                 .OrderBy(x => -x.Anzahl);
 
-            this.Worte = counts;
+            this.Worte = counts.ToList();
         }
 
     }
