@@ -35,10 +35,10 @@ namespace TextAnalyse
         private decimal m_PunkteWieOftInDenTextenGefunden = 0;
         public decimal PunkteWieOftInDenTextenGefunden()
         {
-            return Math.Round(m_PunkteWieOftInDenTextenGefunden / Worte.Count(), 1);
+            return Math.Round(m_PunkteWieOftInDenTextenGefunden / Worte.Count(), 2);
         }
 
-        public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik)
+        public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik, int gesamtanzahllieder)
         {
             m_PunkteInWievielenLiedergefunden = 0;
             m_PunkteWieOftInDenTextenGefunden = 0;
@@ -52,6 +52,7 @@ namespace TextAnalyse
                     m_PunkteWieOftInDenTextenGefunden += item.WieOftInDenTextenGefunden;
                 }
             }
+            m_PunkteWieOftInDenTextenGefunden /= gesamtanzahllieder;
         }
 
         // Gesamtanzahl der Worte in diesem Lied
@@ -72,27 +73,19 @@ namespace TextAnalyse
 
 
         private static readonly string delimiter = ";";
-        public void Dump()
+
+        public string ZeigeLiedstatistik()
         {
-            Console.WriteLine(this.Kuenstler + " - " +
+            return this.Kuenstler + 
+                              delimiter +
                               this.Liedtitel +
                               delimiter +
                               Worte.Count() +
                               delimiter +
-                              this.PunkteInWievielenLiedergefunden() +
+                              this.PunkteInWievielenLiedergefunden()  +
                               delimiter +
-                              this.PunkteWieOftInDenTextenGefunden())  ;
-            //int counter = 1;
-            //foreach (var a in this.Worte)
-            //{
-            //    Console.WriteLine(a.Wort + ' ' + a.Anzahl);
-            //    if (counter++ == 5)
-            //        break;
-            //}
-            //Console.WriteLine();
+                              this.PunkteWieOftInDenTextenGefunden()  ;
         }
-
-
 
         public Lied(string liedtext, Dictionary<string, string> ersetzungen)
         {
@@ -120,7 +113,7 @@ namespace TextAnalyse
             string text = String.Join(" ", lines);
 
             // das sind die zeichen, welche für uns die worte trennen
-            char[] delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':' ,'„', '“' };
+            char[] delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':' ,'„', '“' , '"'};
 
             // hier wandeln wir den text in kleinschreibung um
             // und trennen danach den text in einzelne worte auf
@@ -142,6 +135,11 @@ namespace TextAnalyse
 
             // wieder zusammensetzen, da aus einem wort mehrere wieder sein können
             text = String.Join(" ", xxx_words);
+            // wieder splitten
+            words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            // und nochmal eine liste machen
+            xxx_words = new List<string>(words);
+
             // und dann nochmals alles durchwühlen. sicher ist sicher
             foreach (var item in ersetzungen)
             {

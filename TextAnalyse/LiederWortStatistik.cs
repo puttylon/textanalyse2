@@ -23,9 +23,9 @@ namespace TextAnalyse
             set;
         }
 
-        public void Dump()
+        public string ZeigeStatistik()
         {
-            Console.WriteLine(Wort + ' ' + InWievielenLiedergefunden + ' ' + WieOftInDenTextenGefunden);
+            return Wort + ';' + InWievielenLiedergefunden + ';' + WieOftInDenTextenGefunden;
         }
     }
 }

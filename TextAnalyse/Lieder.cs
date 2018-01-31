@@ -28,7 +28,7 @@ namespace TextAnalyse
             ZaehleWorte();
             foreach (var item in liederliste)
             {
-                item.ErmittlePunkte(liederwortstatistik);
+                item.ErmittlePunkte(liederwortstatistik, liederliste.Count());
                 //item.Dump();
             }
         }
@@ -65,7 +65,6 @@ namespace TextAnalyse
         /// <returns>Die Liedtexte als Strings.</returns>
         private void LadeLiedtexteAusDateien()
         {
-            //string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             // lade ersetzungsliste zuerst
@@ -95,26 +94,74 @@ namespace TextAnalyse
             }
         }
 
-        public void ZeigeVokabular()
+        public void ZeigeVokabular(bool ausgabeindatei)
         {
             Console.WriteLine("\nunterschiedliche Worte (Vokabular):" + this.liederwortstatistik.Count());
+
+            FileStream fs = null;
+            StreamWriter sw = null;
+
+            string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string filepath = pfad + "/Dropbox/Sara/Masterarbeit/vokabular.csv";
+
+
+
+            if (ausgabeindatei)
+            {
+                fs = new FileStream(filepath, FileMode.Create);
+                sw = new StreamWriter(fs, System.Text.Encoding.UTF8);
+                sw.WriteLine("Wort ; InWievielenLiedergefunden ; WieOftInDenTextenGefunden");
+            }
 
             var x12 = from element in liederwortstatistik
                 orderby element.Wort ascending 
                       select element;
             foreach (var x in x12)
             {
-                x.Dump();
+                Console.WriteLine(x.ZeigeStatistik());
+                if (ausgabeindatei)
+                {
+                    sw.WriteLine(x.ZeigeStatistik());
+                }
             }
             Console.WriteLine();
+
+            if (ausgabeindatei)
+            {
+                sw.Close();
+                fs.Close();
+            }
         }
 
 
-        public void ZeigeLiederliste()
+        public void ZeigeLiederliste(Boolean ausgabeindatei)
         {
+            FileStream fs=null;
+            StreamWriter sw=null;
+
+            string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string filepath = pfad + "/Dropbox/Sara/Masterarbeit/liederstatistik.csv";
+
+
+            if (ausgabeindatei)
+            {
+                fs = new FileStream(filepath, FileMode.Create);
+                sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
+                sw.WriteLine("Interpret; Lied; Vokabeln; P1; P2");
+            }
             foreach (var item in liederliste)
             {
-                item.Dump();
+                Console.WriteLine(item.ZeigeLiedstatistik());
+                if (ausgabeindatei)
+                {
+                    sw.WriteLine(item.ZeigeLiedstatistik());
+                }
+            }
+
+            if (ausgabeindatei)
+            {
+                sw.Close();
+                fs.Close();
             }
         }
     }

@@ -15,8 +15,8 @@ namespace TextAnalyse
         {
             
             Lieder lieder = new Lieder();
-            lieder.ZeigeVokabular();
-            lieder.ZeigeLiederliste();
+            lieder.ZeigeVokabular(true);
+            lieder.ZeigeLiederliste(true);
 
             //// hier wird die Liste ausgegeben
             //foreach (var lied in lieder.LiederListe().OrderBy(o => o.Liedtitel).ToList())
