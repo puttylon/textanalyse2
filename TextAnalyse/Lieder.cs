@@ -29,7 +29,7 @@ namespace TextAnalyse
             foreach (var item in liederliste)
             {
                 item.ErmittlePunkte(liederwortstatistik);
-                item.Dump();
+                //item.Dump();
             }
         }
 
@@ -47,7 +47,7 @@ namespace TextAnalyse
             liederwortstatistik.Clear();
             foreach (var a in results)
             {
-                Console.WriteLine(a.Key + ' ' + a.ToList().Count + ' ' + a.ToList().Sum((WortAnzahl arg) => arg.Anzahl));
+                //Console.WriteLine(a.Key + ' ' + a.ToList().Count + ' ' + a.ToList().Sum((WortAnzahl arg) => arg.Anzahl));
                 liederwortstatistik.Add( new LiederWortStatistik() 
                     {
                         Wort=a.Key , 
@@ -55,7 +55,7 @@ namespace TextAnalyse
                         WieOftInDenTextenGefunden= a.ToList().Sum((WortAnzahl arg) => arg.Anzahl)
                     });
             }
-            Console.WriteLine();
+            //Console.WriteLine();
 
         }
 
@@ -65,18 +65,28 @@ namespace TextAnalyse
         /// <returns>Die Liedtexte als Strings.</returns>
         private void LadeLiedtexteAusDateien()
         {
+            //string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             // lade ersetzungsliste zuerst
-            string filepath = pfad + "/ersetzungen.txt";
-            var zeilen=File.ReadAllLines(filepath);
+            string filepath = pfad + "/Dropbox/Sara/Masterarbeit/ersetzungen.txt";
+
             Dictionary<string, string> ersetzungen = new Dictionary<string, string>();
-            for (int i = 0; i < zeilen.Length-1; i=i+2)
+            if (File.Exists(filepath))
             {
-                ersetzungen.Add(zeilen[i],zeilen[i+1]);
+                Console.WriteLine(filepath  + " gefunden");
+                var zeilen = File.ReadAllLines(filepath);
+                for (int i = 0; i < zeilen.Length - 1; i = i + 2)
+                {
+                    ersetzungen.Add(zeilen[i], zeilen[i + 1]);
+                }
+            }
+            else
+            {
+                Console.WriteLine(filepath + " nicht gefunden");
             }
 
-            string folderPath = pfad + "/liedtexte";
+            string folderPath = pfad + "/Dropbox/Sara/Masterarbeit/Alben mit Liedtexten";
          
             foreach (string file in Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.AllDirectories))
             {
@@ -85,16 +95,26 @@ namespace TextAnalyse
             }
         }
 
-        public void Dump()
+        public void ZeigeVokabular()
         {
             Console.WriteLine("\nunterschiedliche Worte (Vokabular):" + this.liederwortstatistik.Count());
 
             var x12 = from element in liederwortstatistik
-                orderby element.WieOftInDenTextenGefunden descending 
+                orderby element.Wort ascending 
                       select element;
             foreach (var x in x12)
             {
                 x.Dump();
+            }
+            Console.WriteLine();
+        }
+
+
+        public void ZeigeLiederliste()
+        {
+            foreach (var item in liederliste)
+            {
+                item.Dump();
             }
         }
     }

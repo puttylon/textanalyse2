@@ -7,21 +7,35 @@ namespace TextAnalyse
     public class Lied
     {
 
-        public string Kuenstler { get; set; }
-        public string Liedtitel { get; set; }
+        public string Kuenstler 
+        { 
+            get; 
+            private set; 
+        }
+        public string Liedtitel 
+        { 
+            get; 
+            private set; 
+        }
+
+        public string Schlagworte
+        {
+            get;
+            private set;
+        }
         public IEnumerable<WortAnzahl> Worte { get; set; }
 
 
-        private int m_PunkteInWievielenLiedergefunden = 0;
-        public int PunkteInWievielenLiedergefunden()
+        private decimal m_PunkteInWievielenLiedergefunden = 0;
+        public decimal PunkteInWievielenLiedergefunden()
         {
-            return m_PunkteInWievielenLiedergefunden / Worte.Count();
+            return Math.Round(m_PunkteInWievielenLiedergefunden / Worte.Count(), 1);
         }
 
-        private int m_PunkteWieOftInDenTextenGefunden = 0;
-        public int PunkteWieOftInDenTextenGefunden()
+        private decimal m_PunkteWieOftInDenTextenGefunden = 0;
+        public decimal PunkteWieOftInDenTextenGefunden()
         {
-            return m_PunkteWieOftInDenTextenGefunden / Worte.Count();
+            return Math.Round(m_PunkteWieOftInDenTextenGefunden / Worte.Count(), 1);
         }
 
         public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik)
@@ -31,9 +45,6 @@ namespace TextAnalyse
 
             foreach (var item in liederwortstatistik)
             {
-                //                WortAnzahl agedTwenty = Worte.Where<WortAnzahl>(x => xxx x.Wort == "hhh"; ).Single<WortAnzahl>();
-                //var agedTwenty = Worte.Where<WortAnzahl>(x => 
-
                 WortAnzahl gefunden = Worte.FirstOrDefault(c => c.Wort == item.Wort);
                 if (gefunden != null)
                 {
@@ -59,13 +70,17 @@ namespace TextAnalyse
                 return 0;
         }
 
+
+        private static readonly string delimiter = ";";
         public void Dump()
         {
-            Console.WriteLine(this.Kuenstler + " - " + 
-                              this.Liedtitel + 
-                              " Punkte= " + 
+            Console.WriteLine(this.Kuenstler + " - " +
+                              this.Liedtitel +
+                              delimiter +
+                              Worte.Count() +
+                              delimiter +
                               this.PunkteInWievielenLiedergefunden() +
-                              " " +
+                              delimiter +
                               this.PunkteWieOftInDenTextenGefunden())  ;
             //int counter = 1;
             //foreach (var a in this.Worte)
@@ -97,12 +112,15 @@ namespace TextAnalyse
             // 2. Zeile = Songtitel
             this.Liedtitel = lines[1].Trim();
             lines[1] = "";
+            // 3. Zeile = Schlagwort
+            this.Schlagworte = lines[2].Trim();
+            lines[2] = "";
 
             // aus den restlichen zeilen wird wieder ein string erstellt, der im folgenden in worte aufgeteilt wird
             string text = String.Join(" ", lines);
 
             // das sind die zeichen, welche für uns die worte trennen
-            char[] delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':' ,'„' };
+            char[] delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':' ,'„', '“' };
 
             // hier wandeln wir den text in kleinschreibung um
             // und trennen danach den text in einzelne worte auf
