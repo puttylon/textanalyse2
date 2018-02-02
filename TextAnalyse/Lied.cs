@@ -34,30 +34,39 @@ namespace TextAnalyse
         private decimal m_PunkteInWievielenLiedergefunden = 0;
         public decimal PunkteInWievielenLiedergefunden()
         {
-            return Math.Round(m_PunkteInWievielenLiedergefunden / Worte.Count(), 1);
+            return Math.Round(m_PunkteInWievielenLiedergefunden, 3);
         }
 
         private decimal m_PunkteWieOftInDenTextenGefunden = 0;
         public decimal PunkteWieOftInDenTextenGefunden()
         {
-            return Math.Round(m_PunkteWieOftInDenTextenGefunden / Worte.Count(), 2);
+            return Math.Round(m_PunkteWieOftInDenTextenGefunden , 3);
         }
 
         public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik, int gesamtanzahllieder)
         {
+            // Bewertungsfunktion
+            // 
             m_PunkteInWievielenLiedergefunden = 0;
             m_PunkteWieOftInDenTextenGefunden = 0;
 
-            foreach (var item in liederwortstatistik)
+            foreach (var item in Worte)
             {
-                WortAnzahl gefunden = Worte.FirstOrDefault(c => c.Wort == item.Wort);
+                // es wird eine summe gebildet für alle worte die 
+                // sowohl im liedvokabular und gesamtvokabular vorkommen
+                LiederWortStatistik gefunden = liederwortstatistik.FirstOrDefault(c => c.Wort == item.Wort);
                 if (gefunden != null)
                 {
-                    m_PunkteInWievielenLiedergefunden += item.InWievielenLiedergefunden;
-                    m_PunkteWieOftInDenTextenGefunden += item.WieOftInDenTextenGefunden;
+                    m_PunkteWieOftInDenTextenGefunden += gefunden.WieOftInDenTextenGefunden;
+                    m_PunkteInWievielenLiedergefunden += (gefunden.InWievielenLiedergefunden - 1);
                 }
+                // die summe für die eigenen vokabeln werden abgezogen
+                m_PunkteWieOftInDenTextenGefunden -= item.Anzahl;
             }
             m_PunkteWieOftInDenTextenGefunden /= gesamtanzahllieder;
+            m_PunkteWieOftInDenTextenGefunden /= Worte.Count();
+            m_PunkteInWievielenLiedergefunden /= gesamtanzahllieder;
+            m_PunkteInWievielenLiedergefunden /= Worte.Count();
         }
 
         // Gesamtanzahl der Worte in diesem Lied
@@ -89,12 +98,15 @@ namespace TextAnalyse
                               delimiter +
                               this.PunkteInWievielenLiedergefunden()  +
                               delimiter +
-                              this.PunkteWieOftInDenTextenGefunden()  ;
+                              this.PunkteWieOftInDenTextenGefunden() 
+                             
+                               ;
 
-            foreach (var item in Worte.OrderBy(x=>x.Wort))
-            {
-                result = result + delimiter + item.Wort;
-            }
+            //foreach (var item in Worte.OrderBy(x=>x.Wort))
+            //{
+            //    result = result + delimiter + item.Wort;
+            //}
+
             return result;
         }
 
