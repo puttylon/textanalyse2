@@ -92,7 +92,9 @@ namespace TextAnalyse
         {
             string result= this.Kuenstler + 
                               delimiter +
-                              this.Liedtitel +
+                               this.Liedtitel +
+                              delimiter +
+                               this.Schlagworte +
                               delimiter +
                               Worte.Count() +
                               delimiter +

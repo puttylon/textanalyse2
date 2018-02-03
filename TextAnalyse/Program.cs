@@ -18,6 +18,7 @@ namespace TextAnalyse
             lieder.ZeigeVokabular(true);
             lieder.ZeigeLiederliste(true);
 
+            Console.WriteLine("Anzahl Lieder:" + lieder.LiederListe().Count());
             //// hier wird die Liste ausgegeben
             //foreach (var lied in lieder.LiederListe().OrderBy(o => o.Liedtitel).ToList())
             //{

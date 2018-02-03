@@ -77,7 +77,10 @@ namespace TextAnalyse
                 var zeilen = File.ReadAllLines(filepath);
                 for (int i = 0; i < zeilen.Length - 1; i = i + 2)
                 {
-                    ersetzungen.Add(zeilen[i], zeilen[i + 1]);
+                    if (!ersetzungen.ContainsKey(zeilen[i]))
+                    {
+                        ersetzungen.Add(zeilen[i], zeilen[i + 1]);
+                    }
                 }
             }
             else
@@ -145,7 +148,7 @@ namespace TextAnalyse
             {
                 fs = new FileStream(filepath, FileMode.Create);
                 sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
-                sw.WriteLine("Interpret; Lied; Vokabeln; P1; P2");
+                sw.WriteLine("Interpret; Lied; Schlagworte; Vokabeln; PunkteInWievielenLiedernGefunden; PunkteWieOftInDenTextenGefunden");
             }
             foreach (var item in liederliste)
             {
