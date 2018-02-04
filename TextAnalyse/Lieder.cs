@@ -89,6 +89,7 @@ namespace TextAnalyse
             }
 
             string folderPath = pfad + "/Dropbox/Sara/Masterarbeit/Alben mit Liedtexten";
+            //folderPath = pfad + "/Dropbox/Sara/Masterarbeit/testtexte";
          
             foreach (string file in Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.AllDirectories))
             {
@@ -114,10 +115,11 @@ namespace TextAnalyse
                 sw.WriteLine("Wort ; InWievielenLiedergefunden ; WieOftInDenTextenGefunden");
             }
 
-            var x12 = from element in liederwortstatistik
+            var sortiertewortliste = from element in liederwortstatistik
                 orderby element.Wort ascending 
-                      select element;
-            foreach (var x in x12)
+                select element;
+            
+            foreach (var x in sortiertewortliste)
             {
                 Console.WriteLine(x.ZeigeStatistik());
                 if (ausgabeindatei)

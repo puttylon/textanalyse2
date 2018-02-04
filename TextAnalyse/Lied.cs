@@ -12,6 +12,7 @@ namespace TextAnalyse
             get; 
             private set; 
         }
+
         public string Liedtitel 
         { 
             get; 
@@ -43,10 +44,17 @@ namespace TextAnalyse
             return Math.Round(m_PunkteWieOftInDenTextenGefunden , 3);
         }
 
+        //public decimal P3
+        //{
+        //    get;
+        //    set;
+        //}
+
         public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik, int gesamtanzahllieder)
         {
-            // Bewertungsfunktion
-            // 
+            // Bewertungsfunktion m_PunkteInWievielenLiedergefunden
+            // diese Zahl sagt aus, zu wie viel Prozent die eigenen Vokabeln 
+            // denen der restlichen Lieder übereinstimmen
             m_PunkteInWievielenLiedergefunden = 0;
             m_PunkteWieOftInDenTextenGefunden = 0;
 
@@ -58,26 +66,39 @@ namespace TextAnalyse
                 if (gefunden != null)
                 {
                     m_PunkteWieOftInDenTextenGefunden += gefunden.WieOftInDenTextenGefunden;
+                    // die summe für die eigenen vokabeln werden abgezogen
+                    m_PunkteWieOftInDenTextenGefunden -= item.Anzahl;
+
                     m_PunkteInWievielenLiedergefunden += (gefunden.InWievielenLiedergefunden - 1);
                 }
-                // die summe für die eigenen vokabeln werden abgezogen
-                m_PunkteWieOftInDenTextenGefunden -= item.Anzahl;
             }
-            m_PunkteWieOftInDenTextenGefunden /= gesamtanzahllieder;
+            //// wie verhält sich der wert im verhältnis zur gesamtpunktzahl?
+            //var summeAllerVokaleAnzahl = liederwortstatistik.Sum(item=>item.InWievielenLiedergefunden);
+            //var summeDieseVokaleAnzahl = this.Worte.Count();
+
+            //P3 = m_PunkteInWievielenLiedergefunden / (summeAllerVokaleAnzahl - summeDieseVokaleAnzahl);
+
+            m_PunkteWieOftInDenTextenGefunden /= (gesamtanzahllieder-1);
             m_PunkteWieOftInDenTextenGefunden /= Worte.Count();
-            m_PunkteInWievielenLiedergefunden /= gesamtanzahllieder;
+
+            m_PunkteInWievielenLiedergefunden /= (gesamtanzahllieder-1);
             m_PunkteInWievielenLiedergefunden /= Worte.Count();
+
+            // Bewertungsfunktion 
+            // Man nimmt die Vokabelliste und erhält eine Summe der Werte A10, B4, C9, etc. z.B. 3000
+            // davon zieht man die Länge der eigenen Vokabelliste
+            /// blablabla... mal noch die testdaten ansehen
         }
 
         // Gesamtanzahl der Worte in diesem Lied
-        public System.Nullable<int> GesamtanzahlWorte()
+        public int? GesamtanzahlWorte()
         {
             var result = (from wc in this.Worte select wc.Anzahl).Sum();
             return result;
         }
 
         // Anzahl der einzelnen Worte
-        public System.Nullable<int> AnzahlEinzelnerWorte()
+        public int? AnzahlEinzelnerWorte()
         {
             if (Worte != null)
                 return Worte.Count();
@@ -101,7 +122,10 @@ namespace TextAnalyse
                               this.PunkteInWievielenLiedergefunden()  +
                               delimiter +
                               this.PunkteWieOftInDenTextenGefunden() 
-                             
+                              //+
+                              // delimiter +
+                              //this.P3 
+
                                ;
 
             //foreach (var item in Worte.OrderBy(x=>x.Wort))
