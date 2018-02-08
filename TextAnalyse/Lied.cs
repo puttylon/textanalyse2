@@ -7,6 +7,9 @@ namespace TextAnalyse
     public class Lied
     {
 
+        // das sind die zeichen, welche für uns die worte trennen
+        private readonly char[] m_delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':', '„', '“', '"' };
+
         public string Kuenstler 
         { 
             get; 
@@ -44,11 +47,11 @@ namespace TextAnalyse
             return Math.Round(m_PunkteWieOftInDenTextenGefunden , 3);
         }
 
-        //public decimal P3
-        //{
-        //    get;
-        //    set;
-        //}
+        public decimal P3
+        {
+            get;
+            set;
+        }
 
         public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik, int gesamtanzahllieder)
         {
@@ -76,13 +79,13 @@ namespace TextAnalyse
             //var summeAllerVokaleAnzahl = liederwortstatistik.Sum(item=>item.InWievielenLiedergefunden);
             //var summeDieseVokaleAnzahl = this.Worte.Count();
 
-            //P3 = m_PunkteInWievielenLiedergefunden / (summeAllerVokaleAnzahl - summeDieseVokaleAnzahl);
-
             m_PunkteWieOftInDenTextenGefunden /= (gesamtanzahllieder-1);
             m_PunkteWieOftInDenTextenGefunden /= Worte.Count();
 
             m_PunkteInWievielenLiedergefunden /= (gesamtanzahllieder-1);
             m_PunkteInWievielenLiedergefunden /= Worte.Count();
+
+            P3 = m_PunkteInWievielenLiedergefunden * ((decimal) this.Worte.Count() / liederwortstatistik.Count());
 
             // Bewertungsfunktion 
             // Man nimmt die Vokabelliste und erhält eine Summe der Werte A10, B4, C9, etc. z.B. 3000
@@ -122,28 +125,27 @@ namespace TextAnalyse
                               this.PunkteInWievielenLiedergefunden()  +
                               delimiter +
                               this.PunkteWieOftInDenTextenGefunden() 
-                              //+
-                              // delimiter +
-                              //this.P3 
+                              +
+                               delimiter +
+                              this.P3 
 
                                ;
 
-            //foreach (var item in Worte.OrderBy(x=>x.Wort))
-            //{
-            //    result = result + delimiter + item.Wort;
-            //}
+            foreach (var item in Worte.OrderBy(x=>x.Wort))
+            {
+                result = result + delimiter + item.Wort;
+            }
 
             return result;
         }
 
-        public Lied(string liedtext, Dictionary<string, string> ersetzungen)
+        public Lied(string liedtext, Dictionary<string, string> ausschreibungen, Dictionary<string, string> ersetzungen)
         {
-            AnalysiereText(liedtext, ersetzungen);
+            AnalysiereText(liedtext, ausschreibungen, ersetzungen);
         }
 
-        private void AnalysiereText(string songtext, Dictionary<string, string> ersetzungen)
+        private string ExtrahiereMetadaten(string songtext)
         {
-
             // wir holen die Metadaten aus den ersten zeilen des Songtextes
             // und löschen danach die zeilen aus dem text
             var lines = songtext.Split(new char[] { '\n' });
@@ -159,42 +161,64 @@ namespace TextAnalyse
             lines[2] = "";
 
             // aus den restlichen zeilen wird wieder ein string erstellt, der im folgenden in worte aufgeteilt wird
-            string text = String.Join(" ", lines);
+            return String.Join(" ", lines).Trim();
+    
+        }
 
-            // das sind die zeichen, welche für uns die worte trennen
-            char[] delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':' ,'„', '“' , '"'};
-
-            // hier wandeln wir den text in kleinschreibung um
+        private List<string> SplitteTextInWorte(string songtext)
+        {
             // und trennen danach den text in einzelne worte auf
-            var words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+            return new List<string>(songtext.Split(m_delimiters, StringSplitOptions.RemoveEmptyEntries));
+        }
 
-            // damit wir mit LINQ damit arbeiten können, wandeln wirs das array in List<string> um
-            List<string> xxx_words = new List<string>(words);
+        private string ErsetzeWorte(string songtext, Dictionary<string, string> ersetzungen)
+        {
 
+            // Worte werden aufgesplitet
+            List<string> wortliste = SplitteTextInWorte(songtext);
 
             // Worte werden durch substitute ersetzt um zu vereinheitlichen.
             // so wird z.B. aus "geh'" "gehe" und aus "7." "siebten" 
             // vielleicht??? 
             foreach (var item in ersetzungen)
             {
-                xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
+                wortliste = wortliste.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
             }
 
             // wieder zusammensetzen, da aus einem wort mehrere werden können
-            text = String.Join(" ", xxx_words);
-            // wieder splitten
-            words = text.Trim().ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-            // und nochmal eine liste machen
-            xxx_words = new List<string>(words);
+            songtext = String.Join(" ", wortliste).Trim();
 
-            // und dann nochmals alles durchwühlen. sicher ist sicher
+            // wieder splitten
+            wortliste = SplitteTextInWorte(songtext);
+
+            // und dann nochmals alles durchwühlen, da nun aus einem Wort mehrere geworden sein können
             foreach (var item in ersetzungen)
             {
-                xxx_words = xxx_words.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
+                wortliste = wortliste.Select<string, string>(s => s == item.Key ? item.Value : s).ToList();
             }
 
+            // wir geben die aktuellen Worte als String zurück
+            return String.Join(" ", wortliste).Trim();
+            
+        }
+
+        private void AnalysiereText(string songtext, Dictionary<string, string> ausschreibungen, Dictionary<string, string> ersetzungen)
+        {
+
+            // metadaten auslesen
+            songtext = ExtrahiereMetadaten(songtext);
+
+            // wir wandeln wir den text in kleinschreibung um
+            songtext = songtext.ToLower();
+
+            // Wortersetzungen
+            songtext = ErsetzeWorte(songtext, ausschreibungen);
+
+            List<string> wortliste = SplitteTextInWorte(songtext);
+
+
             // hier zählen wir, welches wort wie oft vorkommt
-            var counts = xxx_words
+            var counts = wortliste
                 .GroupBy(x => x)
                 .Select(x => new WortAnzahl() { Wort = x.Key, Anzahl = x.Count() })
                 .OrderBy(x => -x.Anzahl);

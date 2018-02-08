@@ -67,10 +67,31 @@ namespace TextAnalyse
         {
             string pfad = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            // lade ersetzungsliste zuerst
-            string filepath = pfad + "/Dropbox/Sara/Masterarbeit/ersetzungen.txt";
+            // lade ersetzungsliste 
+            string filepath = pfad + "/Dropbox/Sara/Masterarbeit/ausschreibungen.txt";
+            Dictionary<string, string> ausschreibungen = new Dictionary<string, string>();
+       
+            if (File.Exists(filepath))
+            {
+                Console.WriteLine(filepath + " gefunden");
+                var zeilen = File.ReadAllLines(filepath);
+                for (int i = 0; i < zeilen.Length - 1; i = i + 2)
+                {
+                    if (!ausschreibungen.ContainsKey(zeilen[i]))
+                    {
+                        ausschreibungen.Add(zeilen[i], zeilen[i + 1]);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine(filepath + " nicht gefunden");
+            }
 
+            // lade ersetzungsliste 
+            filepath = pfad + "/Dropbox/Sara/Masterarbeit/ersetzungen.txt";
             Dictionary<string, string> ersetzungen = new Dictionary<string, string>();
+
             if (File.Exists(filepath))
             {
                 Console.WriteLine(filepath  + " gefunden");
@@ -94,7 +115,7 @@ namespace TextAnalyse
             foreach (string file in Directory.EnumerateFiles(folderPath, "*.txt", SearchOption.AllDirectories))
             {
                 string contents = File.ReadAllText(file);
-                liederliste.Add(new Lied(contents,ersetzungen));
+                liederliste.Add(new Lied(contents,ausschreibungen, ersetzungen));
             }
         }
 
