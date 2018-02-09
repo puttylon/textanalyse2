@@ -28,6 +28,12 @@ namespace TextAnalyse
             private set;
         }
 
+        public string Kommentar
+        {
+            get;
+            private set;
+        }
+
         public List<WortAnzahl> Worte 
         { 
             get; 
@@ -119,6 +125,8 @@ namespace TextAnalyse
                                this.Liedtitel +
                               delimiter +
                                this.Schlagworte +
+                               delimiter + 
+                               this.Kommentar +
                               delimiter +
                               Worte.Count() +
                               delimiter +
@@ -159,6 +167,10 @@ namespace TextAnalyse
             // 3. Zeile = Schlagwort
             this.Schlagworte = lines[2].Trim();
             lines[2] = "";
+            // 4. Zeile = Schlagwort
+            this.Kommentar = lines[3].Trim();
+            lines[3] = "";
+
 
             // aus den restlichen zeilen wird wieder ein string erstellt, der im folgenden in worte aufgeteilt wird
             return String.Join(" ", lines).Trim();

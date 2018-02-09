@@ -171,7 +171,7 @@ namespace TextAnalyse
             {
                 fs = new FileStream(filepath, FileMode.Create);
                 sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
-                sw.WriteLine("Interpret; Lied; Schlagworte; Vokabeln; PunkteInWievielenLiedernGefunden; PunkteWieOftInDenTextenGefunden");
+                sw.WriteLine("Interpret; Lied; Schlagworte; Kommentar; Vokabeln; PunkteInWievielenLiedernGefunden; PunkteWieOftInDenTextenGefunden");
             }
             foreach (var item in liederliste)
             {
