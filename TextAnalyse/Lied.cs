@@ -53,10 +53,10 @@ namespace TextAnalyse
             return Math.Round(m_PunkteWieOftInDenTextenGefunden , 3);
         }
 
-        public decimal P3
+        private decimal m_unikatWorte;
+        public decimal UnikatWorte()
         {
-            get;
-            set;
+            return Math.Round(m_unikatWorte, 3);
         }
 
         public void ErmittlePunkte(List<LiederWortStatistik> liederwortstatistik, int gesamtanzahllieder)
@@ -66,6 +66,8 @@ namespace TextAnalyse
             // denen der restlichen Lieder übereinstimmen
             m_PunkteInWievielenLiedergefunden = 0;
             m_PunkteWieOftInDenTextenGefunden = 0;
+
+            int nurindiesemliedgefunden = 0;
 
             foreach (var item in Worte)
             {
@@ -79,7 +81,13 @@ namespace TextAnalyse
                     m_PunkteWieOftInDenTextenGefunden -= item.Anzahl;
 
                     m_PunkteInWievielenLiedergefunden += (gefunden.InWievielenLiedergefunden - 1);
+
+                    if (gefunden.InWievielenLiedergefunden==1)
+                    {
+                        nurindiesemliedgefunden++;
+                    }
                 }
+              
             }
             //// wie verhält sich der wert im verhältnis zur gesamtpunktzahl?
             //var summeAllerVokaleAnzahl = liederwortstatistik.Sum(item=>item.InWievielenLiedergefunden);
@@ -91,8 +99,9 @@ namespace TextAnalyse
             m_PunkteInWievielenLiedergefunden /= (gesamtanzahllieder-1);
             m_PunkteInWievielenLiedergefunden /= Worte.Count();
 
-            P3 = m_PunkteInWievielenLiedergefunden * ((decimal) this.Worte.Count() / liederwortstatistik.Count());
+            m_unikatWorte = m_PunkteInWievielenLiedergefunden * ((decimal) this.Worte.Count() / liederwortstatistik.Count());
 
+            m_unikatWorte = nurindiesemliedgefunden / ((decimal)this.Worte.Count());
             // Bewertungsfunktion 
             // Man nimmt die Vokabelliste und erhält eine Summe der Werte A10, B4, C9, etc. z.B. 3000
             // davon zieht man die Länge der eigenen Vokabelliste
@@ -120,22 +129,25 @@ namespace TextAnalyse
 
         public string ZeigeLiedstatistik()
         {
-            string result= this.Kuenstler + 
+            string result = this.Kuenstler +
                               delimiter +
                                this.Liedtitel +
                               delimiter +
                                this.Schlagworte +
-                               delimiter + 
+                               delimiter +
                                this.Kommentar +
                               delimiter +
                               Worte.Count() +
                               delimiter +
-                              this.PunkteInWievielenLiedergefunden()  +
+                              this.PunkteInWievielenLiedergefunden() +
                               delimiter +
-                              this.PunkteWieOftInDenTextenGefunden() 
-                              +
-                               delimiter +
-                              this.P3 
+                              this.PunkteWieOftInDenTextenGefunden()
+                               +
+                                delimiter +
+                               this.UnikatWorte();
+                               //+
+                               // delimiter +
+                               //this.P3 
 
                                ;
 

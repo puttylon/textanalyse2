@@ -82,6 +82,14 @@ namespace TextAnalyse
                         ausschreibungen.Add(zeilen[i], zeilen[i + 1]);
                     }
                 }
+                filepath += ".autosave.txt";
+                var autosave = new List<string>();
+                foreach (var item in ausschreibungen.Where(c=>c.Key.Trim()!="").OrderBy(c => c.Key))
+                {
+                    autosave.Add(item.Key);
+                    autosave.Add(item.Value);
+                }
+                File.WriteAllLines(filepath,autosave.ToArray());
             }
             else
             {
@@ -103,6 +111,14 @@ namespace TextAnalyse
                         ersetzungen.Add(zeilen[i], zeilen[i + 1]);
                     }
                 }
+                filepath += ".autosave.txt";
+                var autosave = new List<string>();
+                foreach (var item in ausschreibungen.Where(c => c.Key.Trim() != "").OrderBy(c => c.Key))
+                {
+                    autosave.Add(item.Key);
+                    autosave.Add(item.Value);
+                }
+                File.WriteAllLines(filepath, autosave.ToArray());
             }
             else
             {
@@ -171,7 +187,15 @@ namespace TextAnalyse
             {
                 fs = new FileStream(filepath, FileMode.Create);
                 sw = new StreamWriter(fs,System.Text.Encoding.UTF8);
-                sw.WriteLine("Interpret; Lied; Schlagworte; Kommentar; Vokabeln; PunkteInWievielenLiedernGefunden; PunkteWieOftInDenTextenGefunden");
+                sw.WriteLine("Interpret;" +
+                             "Lied;" +
+                             "Schlagworte;" +
+                             "Kommentar;" +
+                             "Vokabeln;" +
+                             "PunkteInWievielenLiedernGefunden;" +
+                             "PunkteWieOftInDenTextenGefunden;" +
+                             "ProzentUnikatWorte"
+                            );
             }
             foreach (var item in liederliste)
             {
