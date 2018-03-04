@@ -1,0 +1,12 @@
+﻿Vorgehen:
+
+Alle Liedtexte werden eingelesen. Jedes Lied enthält seinen Text.
+
+Es gibt mehrere Runden in denen die in den Liedtexten benutzen Worte transformiert werden.
+
+Eine Runde besteht aus folgenden Schritten:
+1. Ausgangs-Wortliste des Lieds erstellen
+2. Transformation anwenden
+3. Für alle Lieder 1+2 wiederholen
+4. Wortliste aus allen Liedern erstellen
+5. Bewertung für ale Lieder durchführen
