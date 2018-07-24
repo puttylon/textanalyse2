@@ -8,7 +8,7 @@ namespace TextAnalyse
     {
 
         // das sind die zeichen, welche für uns die worte trennen
-        private readonly char[] m_delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', '(', ')', '–', '-', ':', '„', '“', '"' };
+        private readonly char[] m_delimiters = new char[] { ' ', '\r', '\n', '.', '!', '?', ',', ';', '(', ')', '–', '-', ':', '„', '“', '"' };
 
         public string Kuenstler 
         { 
